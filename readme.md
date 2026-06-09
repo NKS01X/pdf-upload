@@ -32,5 +32,3 @@ flowchart TD
     S2 -->|file| S3[("S3")]
     PG -.->|references| S3
 ```
-
-Feel free to adjust or ask me to insert this into a different file or location.
