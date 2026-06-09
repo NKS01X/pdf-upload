@@ -1,0 +1,43 @@
+services:
+  redis:
+    image: redis:7.4-alpine
+    container_name: redis_cache
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass pass --appendonly yes
+    volumes:
+      - redis_data:/data
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  daemon:
+    build: ./daemon
+    container_name: go_daemon
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+  server:
+    build: ./server
+    container_name: go_server
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - daemon
+volumes:
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
